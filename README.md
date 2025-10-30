@@ -65,32 +65,96 @@
 
 ---
 
+### 4. [SCAFFOLD-AND-INDEPENDENCE-DESIGN.md](./SCAFFOLD-AND-INDEPENDENCE-DESIGN.md)
+**脚手架与项目独立性 - 实施方案** 🎯
+
+详细说明如何实现项目独立性，包括：
+- ✅ 项目独立性架构设计（集中式 vs 独立式）
+- ✅ 脚手架工具设计与实现
+- ✅ 完整的 CI/CD 自动化流程
+- ✅ 通过 Git Tag 触发自动发布
+- ✅ 公共核心层设计
+- ✅ 多项目依赖关系管理
+- ✅ 前端应用集成方式
+- ✅ 最佳实践和常见问题
+
+**适合人群**: 需要实施独立 API 客户端项目的团队、DevOps 工程师、架构师
+
+**核心价值**: 
+- 各团队独立维护，互不干扰
+- 一键创建标准化项目
+- 自动化构建和发布流程
+- 按需引入，独立升级
+
+---
+
 ## 🚀 快速开始
 
-### 第一步：理解架构
+### 第一步：理解整体设计
 1. 先阅读 [API-CLIENT-WORKFLOW-DESIGN.md](./API-CLIENT-WORKFLOW-DESIGN.md) 的「整体架构概览」和「工作流环节拆解」部分
 2. 查看 [VISUAL-WORKFLOW.md](./VISUAL-WORKFLOW.md) 中的「整体架构图」，形成直观认知
 
-### 第二步：深入细节
-1. 阅读 [API-CLIENT-WORKFLOW-DESIGN.md](./API-CLIENT-WORKFLOW-DESIGN.md) 的「关键设计决策」部分
-2. 根据你关注的点，查阅 [INTERACTION-DETAILS.md](./INTERACTION-DETAILS.md) 对应的章节
+### 第二步：理解项目独立性方案 ⭐
+1. **重点阅读** [SCAFFOLD-AND-INDEPENDENCE-DESIGN.md](./SCAFFOLD-AND-INDEPENDENCE-DESIGN.md)
+2. 理解集中式管理 vs 独立项目的区别
+3. 了解脚手架工具的使用方法
+4. 掌握 CI/CD 自动发布流程
 
-### 第三步：规划实施
-1. 参考 [API-CLIENT-WORKFLOW-DESIGN.md](./API-CLIENT-WORKFLOW-DESIGN.md) 的「落地实施路线图」
-2. 结合团队实际情况，调整技术选型和实施计划
+### 第三步：深入实现细节
+1. 阅读 [INTERACTION-DETAILS.md](./INTERACTION-DETAILS.md) 了解各层交互
+2. 根据你关注的点，查阅对应章节的详细说明
+
+### 第四步：开始实施
+1. 使用脚手架创建第一个 API 客户端项目
+2. 配置 CI/CD 流程
+3. 通过 Git Tag 触发第一次发布
+4. 在前端应用中集成测试
 
 ---
 
 ## 🏗️ 架构概览
 
+### 项目独立性架构
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    API Client 工作流全景                          │
+│                   独立 API 客户端项目架构                          │
 └─────────────────────────────────────────────────────────────────┘
 
-后端服务 (OpenAPI)
+脚手架工具 (@company/create-api-client)
+    ↓ 一键创建
+    ├─────────────┬─────────────┬─────────────┐
+    │             │             │             │
+团队 A 项目    团队 B 项目    团队 C 项目    团队 N 项目
+api-client-   api-client-   api-client-   api-client-
+user          order         payment       ...
+    │             │             │             │
+    │ 各自维护    │ 各自维护    │ 各自维护    │ 各自维护
+    │ OpenAPI     │ OpenAPI     │ OpenAPI     │ OpenAPI
+    │ YAML        │ YAML        │ YAML        │ YAML
+    ↓             ↓             ↓             ↓
+Git Tag       Git Tag       Git Tag       Git Tag
+v1.2.0        v2.1.0        v1.0.5        vX.Y.Z
+    ↓             ↓             ↓             ↓
+CI/CD 自动   CI/CD 自动   CI/CD 自动   CI/CD 自动
+构建发布      构建发布      构建发布      构建发布
+    ↓             ↓             ↓             ↓
+NPM 仓库      NPM 仓库      NPM 仓库      NPM 仓库
+@company/     @company/     @company/     @company/
+api-client-   api-client-   api-client-   api-client-
+user          order         payment       ...
+    │             │             │             │
+    └─────────────┴─────────────┴─────────────┘
+                    ↓
+              前端应用（按需引入）
+```
+
+### 单个项目内部架构
+
+```
+API Client 项目内部
     ↓
-① OpenAPI 规范管理层 (规范采集、验证、版本管理)
+① OpenAPI 规范管理 (项目内 YAML 文件)
     ↓
 ② 代码生成层 (类型生成、API 函数生成)
     ↓
@@ -107,23 +171,38 @@
 
 ## 🔑 核心亮点
 
-### 1. 完整的自动化流程
-- 从 OpenAPI 规范到可用的 NPM 包，全流程自动化
-- CI/CD 集成，规范变更自动触发 SDK 更新
+### 1. 项目独立性 🎯 **NEW**
+- **各团队独立维护**：每个项目组维护自己的 OpenAPI YAML 文件
+- **独立版本管理**：各项目独立发版，互不影响
+- **按需引入**：前端应用只安装需要的 API 客户端包
+- **快速迭代**：无需协调多个团队，快速发布新版本
 
-### 2. 端到端的类型安全
+### 2. 脚手架工具 🛠️ **NEW**
+- **一键创建项目**：通过 `npm create @company/api-client` 快速创建标准化项目
+- **交互式配置**：友好的命令行交互，自动生成配置文件
+- **多模板支持**：支持通用、React、Vue 等多种模板
+- **CI/CD 自动配置**：自动生成 GitHub Actions / GitLab CI 配置
+
+### 3. 自动化发布流程 🚀 **NEW**
+- **Tag 触发发布**：开发者打 Git Tag 即可触发自动发布
+- **完整的 CI/CD**：自动构建、测试、发布到 NPM
+- **版本管理**：自动根据 Tag 更新版本号
+- **通知机制**：发布成功后自动通知相关人员
+
+### 4. 端到端的类型安全
 - OpenAPI Schema → TypeScript Types
 - 完整的类型推导链，减少运行时错误
 
-### 3. 灵活的扩展机制
+### 5. 灵活的扩展机制
 - **插件系统**: 日志、缓存、重试、监控等可插拔
 - **适配器模式**: 各团队可自定义数据转换和业务逻辑
+- **公共核心层**: 抽取通用代码，各项目共享
 
-### 4. 分层清晰，职责单一
+### 6. 分层清晰，职责单一
 - 每一层关注点不同，易于维护和测试
 - 核心层稳定，扩展层灵活
 
-### 5. 完善的质量保障
+### 7. 完善的质量保障
 - 自动化测试（单元、集成、类型）
 - 规范校验和 Breaking Changes 检测
 - 监控埋点和错误上报
@@ -180,28 +259,74 @@
 
 ## 💡 使用示例
 
-### 安装
+### 创建新的 API 客户端项目
+
 ```bash
-npm install @company/api-client
+# 使用脚手架创建项目
+npm create @company/api-client
+
+# 按照交互式提示填写信息
+# ✓ 项目名称: api-client-user
+# ✓ 选择代码生成工具: swagger-typescript-api
+# ✓ 选择 CI/CD: GitHub Actions
+# ✓ 项目创建成功！
+
+# 进入项目
+cd api-client-user
+
+# 安装依赖
+npm install
+
+# 开发模式
+npm run dev
 ```
 
-### 初始化
-```typescript
-import { createApiClient } from '@company/api-client'
+### 发布新版本
 
-const apiClient = createApiClient({
+```bash
+# 修改 OpenAPI 规范
+vim openapi/user-api.yaml
+
+# 提交代码
+git add .
+git commit -m "feat: add user profile endpoint"
+git push origin main
+
+# 打 Tag 触发自动发布
+git tag v1.1.0
+git push origin v1.1.0
+
+# CI/CD 自动完成构建和发布
+# 几分钟后，新版本就会发布到 NPM
+```
+
+### 在前端应用中使用
+
+```bash
+# 安装需要的 API 客户端包
+npm install @company/api-client-user
+npm install @company/api-client-order
+```
+
+```typescript
+// 初始化
+import { createHttpClient } from '@company/api-client-core'
+import { UserApi } from '@company/api-client-user'
+import { OrderApi } from '@company/api-client-order'
+
+const httpClient = createHttpClient({
   baseURL: 'https://api.example.com',
   getToken: () => localStorage.getItem('token'),
   onError: (error) => {
     // 全局错误处理
   }
 })
-```
 
-### 调用 API
-```typescript
-// 类型安全的 API 调用
-const user = await apiClient.user.getProfile({ userId: '123' })
+export const userApi = new UserApi(httpClient)
+export const orderApi = new OrderApi(httpClient)
+
+// 调用 API
+const user = await userApi.getProfile({ userId: '123' })
 console.log(user.name) // TypeScript 自动提示
 ```
 
@@ -209,21 +334,49 @@ console.log(user.name) // TypeScript 自动提示
 
 ## 🤔 FAQ
 
-### Q1: 后端没有提供 OpenAPI 规范怎么办？
-**A**: 可以根据接口文档手动编写 OpenAPI 规范，或者使用工具从现有代码生成（如 `swagger-jsdoc`）。
+### Q1: 为什么要采用独立项目架构而不是单一仓库？
+**A**: 
+- **解耦合**: 各团队独立维护，互不干扰
+- **快速迭代**: 无需协调多个团队，随时发布新版本
+- **按需引入**: 前端应用只安装需要的包，减小体积
+- **独立升级**: 各项目独立升级，不影响其他项目
 
-### Q2: 单包还是多包策略？
-**A**: 初期建议单包策略，简单快速。当服务数量增多（5+ 个）或团队规模扩大后，再考虑拆分为多包。
+### Q2: 如何保证各项目的代码规范统一？
+**A**: 
+1. 使用脚手架工具创建项目，保证初始结构统一
+2. 将公共代码抽取到 `@company/api-client-core` 包
+3. 在脚手架中集成 ESLint、Prettier 等工具
+4. 提供完善的文档和最佳实践指南
 
-### Q3: 如何处理 Breaking Changes？
+### Q3: 多个项目如何共享公共逻辑？
+**A**: 
+创建公共核心层包 `@company/api-client-core`，包含：
+- HTTP 客户端封装
+- 拦截器
+- 错误处理器
+- 工具函数
+
+各项目通过依赖这个包来复用公共代码。
+
+### Q4: 如何处理 Breaking Changes？
 **A**: 
 1. 使用工具检测 Breaking Changes
-2. 升级 Major 版本号
-3. 提供详细的迁移指南
-4. 保留旧版本一段时间，给团队迁移缓冲期
+2. 升级 Major 版本号（通过 Git Tag）
+3. 在 CHANGELOG 中详细说明变更
+4. 通知使用该包的团队进行升级
 
-### Q4: 团队有特殊需求怎么办？
-**A**: 通过业务适配层扩展，不影响核心层。每个团队可以实现自己的 Adapter，注入自定义逻辑。
+### Q5: CI/CD 发布失败怎么办？
+**A**: 
+1. 查看 GitHub Actions 日志，定位失败原因
+2. 常见问题：OpenAPI 规范验证失败、测试不通过、NPM Token 过期
+3. 修复问题后，删除旧 Tag，重新打 Tag 发布
+4. 参考文档中的「常见问题」章节
+
+### Q6: 后端没有提供 OpenAPI 规范怎么办？
+**A**: 
+1. 根据接口文档手动编写 OpenAPI 规范
+2. 使用工具从后端代码生成（如 `swagger-jsdoc`）
+3. 推动后端团队提供标准的 OpenAPI 规范
 
 ---
 
@@ -239,27 +392,50 @@ console.log(user.name) // TypeScript 自动提示
 
 ## 🎓 适用场景
 
-### ✅ 适合使用该方案的场景
-- 微服务架构，API 数量多
-- 多个前端团队共享 API
-- 后端提供 OpenAPI 规范
+### ✅ 特别适合独立项目架构的场景
+- **多团队协作**: 有多个独立的前端团队
+- **微服务架构**: 后端有多个独立的微服务
+- **频繁迭代**: 各团队需要独立快速迭代
+- **按需引入**: 前端应用不需要全部 API
+- **独立维护**: 各团队负责不同的业务域
+
+### ✅ 适合使用该方案的一般场景
+- API 数量较多（> 20 个端点）
+- 后端提供 OpenAPI 规范（或可以生成）
 - 需要类型安全的 API 调用
 - 追求自动化和标准化
+- 项目需要长期维护
 
 ### ⚠️ 不太适合的场景
-- API 非常少（< 10 个）
-- 后端完全不支持 OpenAPI
+- API 非常少（< 10 个端点）
+- 只有一个小团队维护
 - 项目生命周期很短（< 3 个月）
-- 团队规模很小（1-2 人）
+- 后端完全不支持 OpenAPI 且无法生成
+- 团队规模很小（1-2 人）且无扩展计划
 
 ---
 
 ## 🔗 相关资源
 
+### 官方文档
 - [OpenAPI Specification](https://swagger.io/specification/)
 - [Axios Documentation](https://axios-http.com/)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [swagger-typescript-api](https://github.com/acacode/swagger-typescript-api)
+- [NPM Documentation](https://docs.npmjs.com/)
+
+### 代码生成工具
+- [swagger-typescript-api](https://github.com/acacode/swagger-typescript-api) (推荐)
+- [openapi-typescript](https://github.com/drwpow/openapi-typescript)
+- [openapi-generator](https://github.com/OpenAPITools/openapi-generator)
+- [orval](https://github.com/anymaniax/orval)
+
+### CI/CD 和工具
+- [GitHub Actions](https://docs.github.com/en/actions)
+- [GitLab CI](https://docs.gitlab.com/ee/ci/)
+- [Semantic Versioning](https://semver.org/)
+- [Conventional Commits](https://www.conventionalcommits.org/)
+
+### 可视化工具
 - [Mermaid Live Editor](https://mermaid.live/)
 
 ---
