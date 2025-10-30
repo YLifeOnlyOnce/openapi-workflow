@@ -88,6 +88,25 @@
 
 ---
 
+### 5. [NAMING-CONVENTION.md](./NAMING-CONVENTION.md)
+**命名规范说明 - 最佳实践** 📝
+
+详细说明项目命名规范，包括：
+- ✅ 为什么采用简洁的命名方式
+- ✅ 命名模式和完整示例
+- ✅ 命名优势对比
+- ✅ 特殊情况处理
+- ✅ 迁移指南
+
+**适合人群**: 所有使用脚手架的开发者
+
+**核心价值**:
+- 简洁直观：`@company/user-center-api` 而不是 `@company/api-client-user-center`
+- 语义清晰：一眼就能看出是哪个服务的 API
+- 符合惯例：与后端服务名称保持一致
+
+---
+
 ## 🚀 快速开始
 
 ### 第一步：理解整体设计
@@ -121,13 +140,13 @@
 │                   独立 API 客户端项目架构                          │
 └─────────────────────────────────────────────────────────────────┘
 
-脚手架工具 (@company/create-api-client)
+脚手架工具 (@company/create-api)
     ↓ 一键创建
     ├─────────────┬─────────────┬─────────────┐
     │             │             │             │
 团队 A 项目    团队 B 项目    团队 C 项目    团队 N 项目
-api-client-   api-client-   api-client-   api-client-
-user          order         payment       ...
+user-center-  order-api     payment-api   xxx-api
+api
     │             │             │             │
     │ 各自维护    │ 各自维护    │ 各自维护    │ 各自维护
     │ OpenAPI     │ OpenAPI     │ OpenAPI     │ OpenAPI
@@ -141,8 +160,8 @@ CI/CD 自动   CI/CD 自动   CI/CD 自动   CI/CD 自动
     ↓             ↓             ↓             ↓
 NPM 仓库      NPM 仓库      NPM 仓库      NPM 仓库
 @company/     @company/     @company/     @company/
-api-client-   api-client-   api-client-   api-client-
-user          order         payment       ...
+user-center-  order-api     payment-api   xxx-api
+api
     │             │             │             │
     └─────────────┴─────────────┴─────────────┘
                     ↓
@@ -178,7 +197,7 @@ API Client 项目内部
 - **快速迭代**：无需协调多个团队，快速发布新版本
 
 ### 2. 脚手架工具 🛠️ **NEW**
-- **一键创建项目**：通过 `npm create @company/api-client` 快速创建标准化项目
+- **一键创建项目**：通过 `npm create @company/api` 快速创建标准化项目
 - **交互式配置**：友好的命令行交互，自动生成配置文件
 - **多模板支持**：支持通用、React、Vue 等多种模板
 - **CI/CD 自动配置**：自动生成 GitHub Actions / GitLab CI 配置
@@ -263,16 +282,17 @@ API Client 项目内部
 
 ```bash
 # 使用脚手架创建项目
-npm create @company/api-client
+npm create @company/api
 
 # 按照交互式提示填写信息
-# ✓ 项目名称: api-client-user
+# ✓ 服务名称: user-center
+#   (生成项目: user-center-api, NPM包: @company/user-center-api)
 # ✓ 选择代码生成工具: swagger-typescript-api
 # ✓ 选择 CI/CD: GitHub Actions
 # ✓ 项目创建成功！
 
 # 进入项目
-cd api-client-user
+cd user-center-api
 
 # 安装依赖
 npm install
@@ -285,7 +305,7 @@ npm run dev
 
 ```bash
 # 修改 OpenAPI 规范
-vim openapi/user-api.yaml
+vim openapi/user-center.yaml
 
 # 提交代码
 git add .
@@ -303,16 +323,16 @@ git push origin v1.1.0
 ### 在前端应用中使用
 
 ```bash
-# 安装需要的 API 客户端包
-npm install @company/api-client-user
-npm install @company/api-client-order
+# 安装需要的 API 包
+npm install @company/user-center-api
+npm install @company/order-api
 ```
 
 ```typescript
 // 初始化
-import { createHttpClient } from '@company/api-client-core'
-import { UserApi } from '@company/api-client-user'
-import { OrderApi } from '@company/api-client-order'
+import { createHttpClient } from '@company/api-core'
+import { UserCenterApi } from '@company/user-center-api'
+import { OrderApi } from '@company/order-api'
 
 const httpClient = createHttpClient({
   baseURL: 'https://api.example.com',
@@ -322,11 +342,11 @@ const httpClient = createHttpClient({
   }
 })
 
-export const userApi = new UserApi(httpClient)
+export const userCenterApi = new UserCenterApi(httpClient)
 export const orderApi = new OrderApi(httpClient)
 
 // 调用 API
-const user = await userApi.getProfile({ userId: '123' })
+const user = await userCenterApi.getProfile({ userId: '123' })
 console.log(user.name) // TypeScript 自动提示
 ```
 
@@ -344,13 +364,13 @@ console.log(user.name) // TypeScript 自动提示
 ### Q2: 如何保证各项目的代码规范统一？
 **A**: 
 1. 使用脚手架工具创建项目，保证初始结构统一
-2. 将公共代码抽取到 `@company/api-client-core` 包
+2. 将公共代码抽取到 `@company/api-core` 包
 3. 在脚手架中集成 ESLint、Prettier 等工具
 4. 提供完善的文档和最佳实践指南
 
 ### Q3: 多个项目如何共享公共逻辑？
 **A**: 
-创建公共核心层包 `@company/api-client-core`，包含：
+创建公共核心层包 `@company/api-core`，包含：
 - HTTP 客户端封装
 - 拦截器
 - 错误处理器

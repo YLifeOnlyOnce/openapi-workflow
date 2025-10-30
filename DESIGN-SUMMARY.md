@@ -18,6 +18,10 @@
 - **集中式 vs 独立式架构对比**
   - 旧方案：单一仓库，统一管理所有 API 规范
   - 新方案：各团队独立仓库，独立维护 OpenAPI YAML
+- **命名规范**
+  - 项目命名：`{服务名}-api` (如 `user-center-api`)
+  - NPM 包名：`@company/{服务名}-api` (如 `@company/user-center-api`)
+  - 简洁直观，直接反映服务名称
 - **架构优势**
   - 各团队独立维护，互不干扰
   - 独立版本管理，按需升级
@@ -25,15 +29,17 @@
   - 快速迭代，无需协调
 
 #### 二、脚手架工具设计
-- **CLI 工具**: `@company/create-api-client`
+- **CLI 工具**: `@company/create-api`
 - **功能特性**:
-  - 交互式项目创建
+  - 交互式项目创建（输入服务名，自动生成项目名和包名）
   - 多模板支持（通用、React、Vue）
   - 自动生成 CI/CD 配置
   - 自动配置代码生成工具
 - **使用方式**:
   ```bash
-  npm create @company/api-client
+  npm create @company/api
+  # 输入服务名: user-center
+  # 自动生成: user-center-api 项目和 @company/user-center-api 包
   ```
 
 #### 三、完整的 CI/CD 流程
@@ -56,9 +62,9 @@
 #### 四、项目结构标准化
 脚手架生成的项目包含：
 ```
-api-client-xxx/
+{服务名}-api/             # 如 user-center-api
 ├── openapi/              # OpenAPI 规范目录
-│   └── xxx-api.yaml      # 团队维护的 YAML 文件
+│   └── {服务名}.yaml     # 团队维护的 YAML 文件
 ├── src/                  # 源代码
 │   ├── core/             # 核心层
 │   ├── generated/        # 自动生成的代码
@@ -70,7 +76,7 @@ api-client-xxx/
 ```
 
 #### 五、公共核心层设计
-- **核心包**: `@company/api-client-core`
+- **核心包**: `@company/api-core`
 - **包含内容**:
   - HTTP 客户端封装
   - 拦截器
@@ -80,11 +86,11 @@ api-client-xxx/
 
 #### 六、多项目依赖关系
 ```
-@company/api-client-core (核心层)
+@company/api-core (核心层)
          ↑
-         ├─── @company/api-client-user    (团队 A)
-         ├─── @company/api-client-order   (团队 B)
-         ├─── @company/api-client-payment (团队 C)
+         ├─── @company/user-center-api (团队 A)
+         ├─── @company/order-api       (团队 B)
+         ├─── @company/payment-api     (团队 C)
          └─── ...
                     ↓
               前端应用 (按需引入)
@@ -137,8 +143,8 @@ api-client-xxx/
 ## 🚀 实施路径
 
 ### Phase 1: 基础设施准备 (1 周)
-1. 开发脚手架 CLI 工具 `@company/create-api-client`
-2. 创建公共核心层包 `@company/api-client-core`
+1. 开发脚手架 CLI 工具 `@company/create-api`
+2. 创建公共核心层包 `@company/api-core`
 3. 准备 CI/CD 模板（GitHub Actions / GitLab CI）
 4. 编写文档和示例
 

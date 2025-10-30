@@ -30,26 +30,27 @@
 
 #### ✅ 新方案：项目独立
 ```
-团队 A 仓库: api-client-user
-  ├── openapi/user-api.yaml
+团队 A 仓库: user-center-api
+  ├── openapi/user-center.yaml
   ├── .github/workflows/publish.yml
-  └── 发布 → @company/api-client-user
+  └── 发布 → @company/user-center-api
 
-团队 B 仓库: api-client-order
-  ├── openapi/order-api.yaml
+团队 B 仓库: order-api
+  ├── openapi/order.yaml
   ├── .github/workflows/publish.yml
-  └── 发布 → @company/api-client-order
+  └── 发布 → @company/order-api
 
-团队 C 仓库: api-client-payment
-  ├── openapi/payment-api.yaml
+团队 C 仓库: payment-api
+  ├── openapi/payment.yaml
   ├── .github/workflows/publish.yml
-  └── 发布 → @company/api-client-payment
+  └── 发布 → @company/payment-api
 
 优势：
 - 各团队独立维护，互不干扰
 - 独立版本，按需升级
 - 包体积小，按需引入
 - 快速迭代，无需协调
+- 命名简洁直观，直接反映服务名称
 ```
 
 ---
@@ -58,7 +59,9 @@
 
 ### 2.1 脚手架功能
 
-**CLI 工具名称**: `@company/create-api-client`
+**CLI 工具名称**: `@company/create-api`
+
+> 注：脚手架本身使用 `create-api` 命名，创建的项目则根据服务名称命名（如 `user-center-api`）
 
 #### 核心功能
 1. **项目初始化**: 快速创建标准化的 API 客户端项目
@@ -68,32 +71,33 @@
 
 #### 使用方式
 ```bash
-# 方式 1: 通过 npm/pnpm/yarn
-npm create @company/api-client
+# 方式 1: 通过 npm/pnpm/yarn (推荐)
+npm create @company/api
 
 # 方式 2: 通过 npx
-npx @company/create-api-client
+npx @company/create-api
 
 # 方式 3: 全局安装后使用
-npm install -g @company/create-api-client
-create-api-client
+npm install -g @company/create-api
+create-api
 ```
 
 ### 2.2 交互式问答
 
 ```bash
-$ npm create @company/api-client
+$ npm create @company/api
 
-┌  Create API Client
+┌  Create API Package
 │
-◆  项目名称 (Package name):
-│  api-client-user
+◆  服务名称 (Service name):
+│  user-center
+│  (将生成项目: user-center-api, NPM包: @company/user-center-api)
 │
 ◆  显示名称 (Display name):
-│  User API Client
+│  User Center API
 │
 ◆  描述 (Description):
-│  用户服务的 API 客户端
+│  用户中心服务的 API 客户端
 │
 ◆  团队/作者 (Author):
 │  Team A <team-a@company.com>
@@ -102,8 +106,8 @@ $ npm create @company/api-client
 │  ● 本地 YAML 文件 (我已经有 OpenAPI 规范)
 │  ○ 从 URL 获取 (从后端服务自动拉取)
 │
-◆  OpenAPI 文件路径:
-│  ./specs/user-api.yaml
+◆  OpenAPI 文件路径 (可选，稍后添加):
+│  ./specs/user-center.yaml
 │
 ◆  选择代码生成工具:
 │  ● swagger-typescript-api (推荐)
@@ -116,14 +120,11 @@ $ npm create @company/api-client
 │  ○ React (with React Query)
 │  ○ Vue (with Pinia)
 │
-◆  NPM 包名称 (Package name):
-│  @company/api-client-user
-│
 ◆  NPM Registry:
 │  https://registry.npmjs.org (或私有 Registry)
 │
 ◆  Git 仓库地址 (可选):
-│  https://github.com/company/api-client-user.git
+│  https://github.com/company/user-center-api.git
 │
 ◆  选择 CI/CD 平台:
 │  ● GitHub Actions
@@ -133,20 +134,43 @@ $ npm create @company/api-client
 │
 └  ✓ 项目创建成功！
 
+项目信息:
+  📁 项目目录: user-center-api
+  📦 NPM 包名: @company/user-center-api
+  🔧 代码生成: swagger-typescript-api
+  🚀 CI/CD: GitHub Actions
+
 接下来:
-  cd api-client-user
+  cd user-center-api
   npm install
   npm run dev
 ```
+
+### 2.2.1 命名规范说明
+
+**推荐的命名模式**：
+
+| 服务名称 | 项目目录 | NPM 包名 | 说明 |
+|---------|---------|---------|------|
+| user-center | user-center-api | @company/user-center-api | 用户中心服务 |
+| order | order-api | @company/order-api | 订单服务 |
+| payment | payment-api | @company/payment-api | 支付服务 |
+| product | product-api | @company/product-api | 商品服务 |
+
+**命名优势**：
+- ✅ **简洁直观**：直接反映服务名称，无冗余
+- ✅ **语义清晰**：一眼就能看出是哪个服务的 API
+- ✅ **便于管理**：按服务名称排序，易于查找
+- ✅ **符合惯例**：与后端服务名称保持一致
 
 ### 2.3 项目结构
 
 脚手架生成的项目结构：
 
 ```
-api-client-user/
+user-center-api/                  # 项目根目录
 ├── openapi/                      # OpenAPI 规范目录
-│   └── user-api.yaml             # 主 OpenAPI 文件
+│   └── user-center.yaml          # 主 OpenAPI 文件
 │
 ├── src/                          # 源代码目录
 │   ├── core/                     # 核心请求层
@@ -196,9 +220,9 @@ api-client-user/
 
 ```json
 {
-  "name": "@company/api-client-user",
+  "name": "@company/user-center-api",
   "version": "1.0.0",
-  "description": "用户服务的 API 客户端",
+  "description": "用户中心服务的 API 客户端",
   "author": "Team A <team-a@company.com>",
   "license": "MIT",
   
@@ -518,12 +542,12 @@ git push --follow-tags origin main
 - 错误处理器
 - 工具函数
 
-**方案**：创建一个公共包 `@company/api-client-core`，供各项目依赖。
+**方案**：创建一个公共包 `@company/api-core`，供各项目依赖。
 
 ### 4.2 公共核心层结构
 
 ```
-api-client-core/
+api-core/
 ├── src/
 │   ├── http-client.ts         # Axios 封装
 │   ├── interceptors/
@@ -540,9 +564,9 @@ api-client-core/
 ### 4.3 各项目如何使用核心层
 
 ```typescript
-// api-client-user/src/index.ts
-import { createHttpClient } from '@company/api-client-core'
-import { UserApi } from './generated/api'
+// user-center-api/src/index.ts
+import { createHttpClient } from '@company/api-core'
+import { UserCenterApi } from './generated/api'
 
 // 创建 HTTP 客户端
 const httpClient = createHttpClient({
@@ -551,9 +575,9 @@ const httpClient = createHttpClient({
 })
 
 // 注入到生成的 API 中
-const userApi = new UserApi(httpClient)
+const userCenterApi = new UserCenterApi(httpClient)
 
-export { userApi }
+export { userCenterApi }
 export * from './generated/models'
 export * from './generated/types'
 ```
@@ -561,8 +585,8 @@ export * from './generated/types'
 ### 4.4 核心层独立发布
 
 核心层也是一个独立的 NPM 包：
-- 仓库: `api-client-core`
-- NPM 包名: `@company/api-client-core`
+- 仓库: `api-core`
+- NPM 包名: `@company/api-core`
 - 版本管理: 独立版本号
 - 发布流程: 与各项目相同的 CI/CD
 
@@ -573,21 +597,21 @@ export * from './generated/types'
 ### 5.1 依赖图
 
 ```
-@company/api-client-core (核心层)
+@company/api-core (核心层)
          ↑
          │ 依赖
          ├──────────┬──────────┬──────────┐
          │          │          │          │
-@company/  @company/  @company/  @company/
-api-client-  api-client-  api-client-  api-client-
-user         order        payment      product
+@company/    @company/    @company/    @company/
+user-center- order-api    payment-api  product-api
+api
          │          │          │          │
          │          │          │          │
          └──────────┴──────────┴──────────┘
                     ↓
               前端应用 (按需引入)
-           import { userApi } from '@company/api-client-user'
-           import { orderApi } from '@company/api-client-order'
+           import { userCenterApi } from '@company/user-center-api'
+           import { orderApi } from '@company/order-api'
 ```
 
 ### 5.2 版本兼容性策略
@@ -595,7 +619,7 @@ user         order        payment      product
 #### 核心层版本策略
 ```json
 {
-  "name": "@company/api-client-core",
+  "name": "@company/api-core",
   "version": "2.0.0"
 }
 ```
@@ -603,9 +627,9 @@ user         order        payment      product
 #### 各项目依赖核心层
 ```json
 {
-  "name": "@company/api-client-user",
+  "name": "@company/user-center-api",
   "dependencies": {
-    "@company/api-client-core": "^2.0.0"  // 兼容 2.x.x
+    "@company/api-core": "^2.0.0"  // 兼容 2.x.x
   }
 }
 ```
@@ -621,9 +645,9 @@ user         order        payment      product
 ### 6.1 安装依赖
 
 ```bash
-# 只安装需要的 API 客户端包
-npm install @company/api-client-user
-npm install @company/api-client-order
+# 只安装需要的 API 包
+npm install @company/user-center-api
+npm install @company/order-api
 
 # 核心层会作为 peer dependency 自动安装
 ```
@@ -632,9 +656,9 @@ npm install @company/api-client-order
 
 ```typescript
 // src/api/index.ts
-import { createHttpClient } from '@company/api-client-core'
-import { UserApi } from '@company/api-client-user'
-import { OrderApi } from '@company/api-client-order'
+import { createHttpClient } from '@company/api-core'
+import { UserCenterApi } from '@company/user-center-api'
+import { OrderApi } from '@company/order-api'
 
 // 创建全局 HTTP 客户端
 const httpClient = createHttpClient({
@@ -650,15 +674,15 @@ const httpClient = createHttpClient({
 })
 
 // 初始化各 API
-export const userApi = new UserApi(httpClient)
+export const userCenterApi = new UserCenterApi(httpClient)
 export const orderApi = new OrderApi(httpClient)
 
 // 在组件中使用
-import { userApi } from '@/api'
+import { userCenterApi } from '@/api'
 
 async function fetchUserProfile(userId: string) {
   try {
-    const user = await userApi.getProfile({ userId })
+    const user = await userCenterApi.getProfile({ userId })
     console.log(user.name)  // TypeScript 类型提示
   } catch (error) {
     console.error('Failed to fetch user:', error)
@@ -670,13 +694,13 @@ async function fetchUserProfile(userId: string) {
 
 ```typescript
 // 使用动态导入，减少初始加载体积
-const loadUserApi = async () => {
-  const { UserApi } = await import('@company/api-client-user')
-  return new UserApi(httpClient)
+const loadUserCenterApi = async () => {
+  const { UserCenterApi } = await import('@company/user-center-api')
+  return new UserCenterApi(httpClient)
 }
 
 // 在需要时才加载
-const userApi = await loadUserApi()
+const userCenterApi = await loadUserCenterApi()
 ```
 
 ---
@@ -686,7 +710,7 @@ const userApi = await loadUserApi()
 ### 7.1 脚手架项目结构
 
 ```
-create-api-client/
+create-api/
 ├── src/
 │   ├── cli.ts                 # CLI 入口
 │   ├── prompts.ts             # 交互式问答
@@ -714,21 +738,27 @@ import { generateProject } from './generator'
 const program = new Command()
 
 program
-  .name('create-api-client')
-  .description('创建 OpenAPI API 客户端项目')
+  .name('create-api')
+  .description('创建 OpenAPI API 包项目')
   .version('1.0.0')
   .action(async () => {
     const answers = await inquirer.prompt([
       {
         type: 'input',
-        name: 'projectName',
-        message: '项目名称:',
-        default: 'api-client-service',
+        name: 'serviceName',
+        message: '服务名称 (例如: user-center, order, payment):',
+        default: 'my-service',
         validate: (input) => {
           if (!/^[a-z0-9-]+$/.test(input)) {
-            return '项目名称只能包含小写字母、数字和连字符'
+            return '服务名称只能包含小写字母、数字和连字符'
           }
           return true
+        },
+        transformer: (input) => {
+          // 自动显示将生成的项目名和包名
+          const projectName = `${input}-api`
+          const packageName = `@company/${input}-api`
+          return `${input} → 项目: ${projectName}, 包: ${packageName}`
         }
       },
       {
@@ -766,18 +796,7 @@ program
         ],
         default: 'base'
       },
-      {
-        type: 'input',
-        name: 'packageName',
-        message: 'NPM 包名称:',
-        default: (answers) => `@company/api-client-${answers.projectName}`,
-        validate: (input) => {
-          if (!/^@[a-z0-9-~][a-z0-9-._~]*\/[a-z0-9-._~]+$/.test(input)) {
-            return 'NPM 包名称格式不正确'
-          }
-          return true
-        }
-      },
+      // NPM 包名自动根据服务名称生成，无需用户输入
       {
         type: 'list',
         name: 'cicd',
@@ -807,7 +826,12 @@ import chalk from 'chalk'
 import ora from 'ora'
 
 export async function generateProject(config: any) {
-  const { projectName, packageName, template, cicd } = config
+  const { serviceName, template, cicd } = config
+  
+  // 根据服务名称生成项目名和包名
+  const projectName = `${serviceName}-api`
+  const packageName = `@company/${serviceName}-api`
+  
   const projectPath = path.join(process.cwd(), projectName)
 
   // 检查目录是否已存在
@@ -1291,9 +1315,9 @@ grep -r "operationId" specs/*.yaml | wc -l
 #### 步骤 2: 创建独立项目
 ```bash
 # 使用脚手架创建各项目
-npx @company/create-api-client  # user
-npx @company/create-api-client  # order
-npx @company/create-api-client  # payment
+npm create @company/api  # 输入 user-center
+npm create @company/api  # 输入 order
+npm create @company/api  # 输入 payment
 ```
 
 #### 步骤 3: 迁移 OpenAPI 规范
@@ -1312,9 +1336,9 @@ apiClient.user.getProfile()
 apiClient.order.list()
 
 // 新方式
-import { userApi } from '@company/api-client-user'
-import { orderApi } from '@company/api-client-order'
-userApi.getProfile()
+import { userCenterApi } from '@company/user-center-api'
+import { orderApi } from '@company/order-api'
+userCenterApi.getProfile()
 orderApi.list()
 ```
 
