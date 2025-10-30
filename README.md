@@ -101,9 +101,29 @@
 **适合人群**: 所有使用脚手架的开发者
 
 **核心价值**:
-- 简洁直观：`@company/user-center-api` 而不是 `@company/api-client-user-center`
-- 语义清晰：一眼就能看出是哪个服务的 API
-- 符合惯例：与后端服务名称保持一致
+- 极致简洁：`@company.api/user-center` 包名即服务名
+- Scope 语义化：`@company.api` 专门用于 API 包
+- 命名空间清晰：可扩展为 `@company.ui`, `@company.utils` 等
+- 与后端完全一致：包名与后端服务名相同
+
+---
+
+### 6. [NAMING-EVOLUTION.md](./NAMING-EVOLUTION.md)
+**命名方案演进历史** 📜
+
+记录命名方案的演进过程，包括：
+- ✅ 三个版本的对比（v1.0 → v2.0 → v3.0）
+- ✅ 每个版本的优缺点分析
+- ✅ 为什么最终选择 `@company.api/xxx`
+- ✅ 业界最佳实践参考
+- ✅ 详细的迁移指南
+
+**适合人群**: 架构师、技术负责人、对命名有疑问的开发者
+
+**核心价值**:
+- 了解设计决策的来龙去脉
+- 学习业界最佳实践
+- 获得从旧版本迁移的指导
 
 ---
 
@@ -158,10 +178,9 @@ v1.2.0        v2.1.0        v1.0.5        vX.Y.Z
 CI/CD 自动   CI/CD 自动   CI/CD 自动   CI/CD 自动
 构建发布      构建发布      构建发布      构建发布
     ↓             ↓             ↓             ↓
-NPM 仓库      NPM 仓库      NPM 仓库      NPM 仓库
-@company/     @company/     @company/     @company/
-user-center-  order-api     payment-api   xxx-api
-api
+NPM 仓库        NPM 仓库        NPM 仓库        NPM 仓库
+@company.api/   @company.api/   @company.api/   @company.api/
+user-center     order           payment         xxx
     │             │             │             │
     └─────────────┴─────────────┴─────────────┘
                     ↓
@@ -286,7 +305,7 @@ npm create @company/api
 
 # 按照交互式提示填写信息
 # ✓ 服务名称: user-center
-#   (生成项目: user-center-api, NPM包: @company/user-center-api)
+#   (生成项目: user-center-api, NPM包: @company.api/user-center)
 # ✓ 选择代码生成工具: swagger-typescript-api
 # ✓ 选择 CI/CD: GitHub Actions
 # ✓ 项目创建成功！
@@ -324,15 +343,16 @@ git push origin v1.1.0
 
 ```bash
 # 安装需要的 API 包
-npm install @company/user-center-api
-npm install @company/order-api
+npm install @company.api/user-center
+npm install @company.api/order
+npm install @company.api/core
 ```
 
 ```typescript
 // 初始化
-import { createHttpClient } from '@company/api-core'
-import { UserCenterApi } from '@company/user-center-api'
-import { OrderApi } from '@company/order-api'
+import { createHttpClient } from '@company.api/core'
+import { UserCenterApi } from '@company.api/user-center'
+import { OrderApi } from '@company.api/order'
 
 const httpClient = createHttpClient({
   baseURL: 'https://api.example.com',
@@ -364,13 +384,13 @@ console.log(user.name) // TypeScript 自动提示
 ### Q2: 如何保证各项目的代码规范统一？
 **A**: 
 1. 使用脚手架工具创建项目，保证初始结构统一
-2. 将公共代码抽取到 `@company/api-core` 包
+2. 将公共代码抽取到 `@company.api/core` 包
 3. 在脚手架中集成 ESLint、Prettier 等工具
 4. 提供完善的文档和最佳实践指南
 
 ### Q3: 多个项目如何共享公共逻辑？
 **A**: 
-创建公共核心层包 `@company/api-core`，包含：
+创建公共核心层包 `@company.api/core`，包含：
 - HTTP 客户端封装
 - 拦截器
 - 错误处理器

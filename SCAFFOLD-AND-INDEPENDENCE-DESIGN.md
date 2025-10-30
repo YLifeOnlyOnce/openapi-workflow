@@ -33,17 +33,17 @@
 团队 A 仓库: user-center-api
   ├── openapi/user-center.yaml
   ├── .github/workflows/publish.yml
-  └── 发布 → @company/user-center-api
+  └── 发布 → @company.api/user-center
 
 团队 B 仓库: order-api
   ├── openapi/order.yaml
   ├── .github/workflows/publish.yml
-  └── 发布 → @company/order-api
+  └── 发布 → @company.api/order
 
 团队 C 仓库: payment-api
   ├── openapi/payment.yaml
   ├── .github/workflows/publish.yml
-  └── 发布 → @company/payment-api
+  └── 发布 → @company.api/payment
 
 优势：
 - 各团队独立维护，互不干扰
@@ -91,7 +91,7 @@ $ npm create @company/api
 │
 ◆  服务名称 (Service name):
 │  user-center
-│  (将生成项目: user-center-api, NPM包: @company/user-center-api)
+│  (将生成项目: user-center-api, NPM包: @company.api/user-center)
 │
 ◆  显示名称 (Display name):
 │  User Center API
@@ -136,7 +136,8 @@ $ npm create @company/api
 
 项目信息:
   📁 项目目录: user-center-api
-  📦 NPM 包名: @company/user-center-api
+  📦 NPM 包名: @company.api/user-center
+  📦 NPM Scope: @company.api
   🔧 代码生成: swagger-typescript-api
   🚀 CI/CD: GitHub Actions
 
@@ -152,10 +153,10 @@ $ npm create @company/api
 
 | 服务名称 | 项目目录 | NPM 包名 | 说明 |
 |---------|---------|---------|------|
-| user-center | user-center-api | @company/user-center-api | 用户中心服务 |
-| order | order-api | @company/order-api | 订单服务 |
-| payment | payment-api | @company/payment-api | 支付服务 |
-| product | product-api | @company/product-api | 商品服务 |
+| user-center | user-center-api | @company.api/user-center | 用户中心服务 |
+| order | order-api | @company.api/order | 订单服务 |
+| payment | payment-api | @company.api/payment | 支付服务 |
+| product | product-api | @company.api/product | 商品服务 |
 
 **命名优势**：
 - ✅ **简洁直观**：直接反映服务名称，无冗余
@@ -220,7 +221,7 @@ user-center-api/                  # 项目根目录
 
 ```json
 {
-  "name": "@company/user-center-api",
+  "name": "@company.api/user-center",
   "version": "1.0.0",
   "description": "用户中心服务的 API 客户端",
   "author": "Team A <team-a@company.com>",
@@ -565,7 +566,7 @@ api-core/
 
 ```typescript
 // user-center-api/src/index.ts
-import { createHttpClient } from '@company/api-core'
+import { createHttpClient } from '@company.api/core'
 import { UserCenterApi } from './generated/api'
 
 // 创建 HTTP 客户端
@@ -586,7 +587,7 @@ export * from './generated/types'
 
 核心层也是一个独立的 NPM 包：
 - 仓库: `api-core`
-- NPM 包名: `@company/api-core`
+- NPM 包名: `@company.api/core`
 - 版本管理: 独立版本号
 - 发布流程: 与各项目相同的 CI/CD
 
@@ -597,21 +598,20 @@ export * from './generated/types'
 ### 5.1 依赖图
 
 ```
-@company/api-core (核心层)
+@company.api/core (核心层)
          ↑
          │ 依赖
          ├──────────┬──────────┬──────────┐
          │          │          │          │
-@company/    @company/    @company/    @company/
-user-center- order-api    payment-api  product-api
-api
+@company.api/    @company.api/    @company.api/    @company.api/
+user-center      order            payment          product
          │          │          │          │
          │          │          │          │
          └──────────┴──────────┴──────────┘
                     ↓
               前端应用 (按需引入)
-           import { userCenterApi } from '@company/user-center-api'
-           import { orderApi } from '@company/order-api'
+           import { userCenterApi } from '@company.api/user-center'
+           import { orderApi } from '@company.api/order'
 ```
 
 ### 5.2 版本兼容性策略
@@ -619,7 +619,7 @@ api
 #### 核心层版本策略
 ```json
 {
-  "name": "@company/api-core",
+  "name": "@company.api/core",
   "version": "2.0.0"
 }
 ```
@@ -627,9 +627,9 @@ api
 #### 各项目依赖核心层
 ```json
 {
-  "name": "@company/user-center-api",
+  "name": "@company.api/user-center",
   "dependencies": {
-    "@company/api-core": "^2.0.0"  // 兼容 2.x.x
+    "@company.api/core": "^2.0.0"  // 兼容 2.x.x
   }
 }
 ```
@@ -646,19 +646,20 @@ api
 
 ```bash
 # 只安装需要的 API 包
-npm install @company/user-center-api
-npm install @company/order-api
+npm install @company.api/user-center
+npm install @company.api/order
+npm install @company.api/core
 
-# 核心层会作为 peer dependency 自动安装
+# 核心层佟可以作为 peer dependency
 ```
 
 ### 6.2 使用示例
 
 ```typescript
 // src/api/index.ts
-import { createHttpClient } from '@company/api-core'
-import { UserCenterApi } from '@company/user-center-api'
-import { OrderApi } from '@company/order-api'
+import { createHttpClient } from '@company.api/core'
+import { UserCenterApi } from '@company.api/user-center'
+import { OrderApi } from '@company.api/order'
 
 // 创建全局 HTTP 客户端
 const httpClient = createHttpClient({
@@ -695,7 +696,7 @@ async function fetchUserProfile(userId: string) {
 ```typescript
 // 使用动态导入，减少初始加载体积
 const loadUserCenterApi = async () => {
-  const { UserCenterApi } = await import('@company/user-center-api')
+  const { UserCenterApi } = await import('@company.api/user-center')
   return new UserCenterApi(httpClient)
 }
 

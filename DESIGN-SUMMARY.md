@@ -86,11 +86,11 @@
 
 #### 六、多项目依赖关系
 ```
-@company/api-core (核心层)
+@company.api/core (核心层)
          ↑
-         ├─── @company/user-center-api (团队 A)
-         ├─── @company/order-api       (团队 B)
-         ├─── @company/payment-api     (团队 C)
+         ├─── @company.api/user-center (团队 A)
+         ├─── @company.api/order       (团队 B)
+         ├─── @company.api/payment     (团队 C)
          └─── ...
                     ↓
               前端应用 (按需引入)
@@ -144,7 +144,7 @@
 
 ### Phase 1: 基础设施准备 (1 周)
 1. 开发脚手架 CLI 工具 `@company/create-api`
-2. 创建公共核心层包 `@company/api-core`
+2. 创建公共核心层包 `@company.api/core`
 3. 准备 CI/CD 模板（GitHub Actions / GitLab CI）
 4. 编写文档和示例
 
